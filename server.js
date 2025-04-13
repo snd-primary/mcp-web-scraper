@@ -4,6 +4,9 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const cors = require('cors');
 
+// AI連携用のルートをインポート
+const aiIntegrationRoutes = require('./routes/aiIntegration');
+
 // サーバーの設定
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +21,8 @@ app.get('/', (req, res) => {
     message: 'MCP Web Scraper API',
     endpoints: {
       '/scrape': 'GET - URLからWebページを取得',
+      '/ai/content': 'GET - AIアプリ用にWebページコンテンツを取得',
+      '/ai/bulk': 'POST - 複数のURLを一括処理'
     }
   });
 });
@@ -88,6 +93,9 @@ app.get('/scrape', async (req, res) => {
   }
 });
 
+// AI連携用のルートをマウント
+app.use('/ai', aiIntegrationRoutes);
+
 // 404ハンドラー
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
@@ -102,4 +110,5 @@ app.use((err, req, res, next) => {
 // サーバーを起動
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`AI integration endpoints available at http://localhost:${PORT}/ai/content and http://localhost:${PORT}/ai/bulk`);
 });
